@@ -8,6 +8,9 @@ export default function Profile() {
   const [profile, setProfile] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [newBio, setNewBio] = useState('');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -21,8 +24,12 @@ export default function Profile() {
             .eq('id', user.id)
             .single();
           
-          if (profileData) setProfile(profileData);
-          else setProfile({ ...mockProfile, username: user.user_metadata.username });
+          if (profileData) {
+            setProfile(profileData);
+            setNewBio(profileData.bio || '');
+          } else {
+            setProfile({ ...mockProfile, username: user.user_metadata.username });
+          }
 
           // Fetch history
           const { data: historyData } = await supabase
@@ -40,6 +47,27 @@ export default function Profile() {
     }
     fetchProfile();
   }, []);
+
+  const handleSaveBio = async () => {
+    setSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ bio: newBio })
+        .eq('id', user.id);
+      
+      if (error) throw error;
+      setProfile({ ...profile, bio: newBio });
+      setIsEditing(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -90,9 +118,45 @@ export default function Profile() {
         </div>
         <div>
           <h1 className="baloo text-3xl font-extrabold text-begi-navy">{activeProfile.username}</h1>
-          <p className="font-sans text-sm font-medium text-slate-500 mt-1 max-w-[280px] mx-auto leading-relaxed">
-            {activeProfile.bio || 'Spread kindness, one beg at a time! ✨'}
-          </p>
+          {isEditing ? (
+            <div className="mt-2 space-y-2">
+              <textarea 
+                value={newBio}
+                onChange={(e) => setNewBio(e.target.value)}
+                className="w-full bg-slate-50 border-2 border-begi-navy rounded-xl p-3 text-sm font-medium focus:border-begi-turquoise outline-none"
+                placeholder="Write your kindness bio..."
+                rows={2}
+              />
+              <div className="flex justify-center gap-2">
+                <button 
+                  onClick={() => setIsEditing(false)}
+                  className="bg-white border-2 border-begi-navy rounded-lg px-4 py-1 text-xs font-bold"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleSaveBio}
+                  disabled={saving}
+                  className="bg-begi-turquoise text-white border-2 border-begi-navy rounded-lg px-4 py-1 text-xs font-bold flex items-center gap-1"
+                >
+                  {saving && <Loader2 className="w-3 h-3 animate-spin" />}
+                  Save
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="group relative inline-block">
+              <p className="font-sans text-sm font-medium text-slate-500 mt-1 max-w-[280px] mx-auto leading-relaxed">
+                {activeProfile.bio || 'Spread kindness, one beg at a time! ✨'}
+              </p>
+              <button 
+                onClick={() => setIsEditing(true)}
+                className="absolute -right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-slate-300 hover:text-begi-turquoise"
+              >
+                <Edit2 className="w-3 h-3" />
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="w-full bg-begi-turquoise border-4 border-begi-navy rounded-[24px] p-6 flex items-center justify-between cartoon-shadow">

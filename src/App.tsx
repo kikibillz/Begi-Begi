@@ -147,13 +147,17 @@ export default function App() {
     setBegs(prev => prev.filter(b => b.id !== id));
   };
 
-  if (hasSupabaseConfig && !user) {
-    return <Auth onSuccess={() => setActiveTab('home')} />;
-  }
-
   const filteredBegs = activeCategory === 'All Begs' 
     ? begs 
     : begs.filter(b => b.category === activeCategory);
+
+  const handleActionWithAuth = (action: () => void) => {
+    if (!user) {
+      setActiveTab('me');
+      return;
+    }
+    action();
+  };
 
   return (
     <div className="min-h-screen pb-32 max-w-2xl mx-auto flex flex-col font-sans bg-begi-bg">
@@ -163,8 +167,12 @@ export default function App() {
         {activeTab === 'home' && (
           <div className="animate-in fade-in duration-500">
             <section className="mb-10 text-left">
-              <h1 className="baloo text-4xl font-extrabold text-begi-navy leading-none mb-2">Morning, {user?.user_metadata?.username || 'Felix'}! 👋</h1>
-              <p className="text-slate-500 font-medium text-lg">Who's begging for your help today?</p>
+              <h1 className="baloo text-4xl font-extrabold text-begi-navy leading-none mb-2">
+                {user ? `Morning, ${user?.user_metadata?.username || 'Felix'}! 👋` : 'Welcome! 👋'}
+              </h1>
+              <p className="text-slate-500 font-medium text-lg">
+                {user ? "Who's begging for your help today?" : "Sign in to start granting wishes!"}
+              </p>
             </section>
             
             <CategoryFilter 
@@ -184,14 +192,14 @@ export default function App() {
                     <BegCard 
                       key={beg.id} 
                       beg={beg} 
-                      onGrant={handleGrant} 
+                      onGrant={(id) => handleActionWithAuth(() => handleGrant(id))} 
                     />
                   ))
                 ) : (
                   <div className="text-center py-24 bg-white border-4 border-dashed border-slate-200 rounded-[32px] cartoon-shadow">
                     <p className="text-slate-400 baloo font-bold text-xl">No begs here! Check back soon or</p>
                     <button 
-                      onClick={() => setActiveTab('beg')}
+                      onClick={() => handleActionWithAuth(() => setActiveTab('beg'))}
                       className="text-begi-turquoise baloo font-extrabold text-lg underline mt-2 btn-pop"
                     >
                       post your own!
@@ -202,7 +210,7 @@ export default function App() {
             )}
             
             <button 
-              onClick={() => setActiveTab('beg')}
+              onClick={() => handleActionWithAuth(() => setActiveTab('beg'))}
               className="fixed bottom-32 right-6 w-16 h-16 bg-begi-orange border-4 border-begi-navy rounded-full flex items-center justify-center cartoon-shadow btn-pop z-50 group"
             >
               <Plus className="w-8 h-8 text-white transition-transform group-hover:rotate-90" />
@@ -212,10 +220,14 @@ export default function App() {
 
         {activeTab === 'beg' && (
           <div className="animate-in slide-in-from-bottom-4 duration-300">
-            <PostBeg 
-              onSuccess={() => setActiveTab('home')} 
-              onCancel={() => setActiveTab('home')} 
-            />
+            {user ? (
+              <PostBeg 
+                onSuccess={() => setActiveTab('home')} 
+                onCancel={() => setActiveTab('home')} 
+              />
+            ) : (
+              <Auth onSuccess={() => setActiveTab('beg')} />
+            )}
           </div>
         )}
 
@@ -227,7 +239,7 @@ export default function App() {
 
         {activeTab === 'me' && (
           <div className="animate-in fade-in duration-500">
-            <Profile />
+            {user ? <Profile /> : <Auth onSuccess={() => setActiveTab('me')} />}
           </div>
         )}
       </main>
