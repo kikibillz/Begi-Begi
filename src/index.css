@@ -1,24 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Baloo 2", cursive;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
 
   --color-begi-turquoise: #2EC4B6;
   --color-begi-orange: #FF9F1C;
   --color-begi-yellow: #FFBF00;
   --color-begi-navy: #011627;
-  --color-begi-blue: #219EBC;
-  --color-begi-bg: #F0F9FF;
+  --color-begi-pink: #FF006E;
+  --color-begi-bg: #FFFFFF;
   
-  --radius-xl: 24px;
-  --radius-2xl: 32px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
 }
 
 @layer base {
   body {
-    @apply bg-begi-bg text-begi-navy font-sans;
+    @apply bg-slate-50 text-begi-navy font-sans antialiased;
   }
 }
 
@@ -28,19 +28,24 @@
   }
   
   .btn-pop {
-    transition: transform 0.1s ease;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   
-  .btn-pop:active {
-    transform: scale(0.95) translate(2px, 2px);
+  .btn-pop:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px 0px #011627;
   }
 
-  .squish-button {
-    transition: transform 0.1s ease;
-    box-shadow: 4px 4px 0px 0px #011627;
+  .btn-pop:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px 0px #011627;
   }
-  
-  .squish-button:active {
-    transform: scale(0.95) translate(2px, 2px);
+
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }

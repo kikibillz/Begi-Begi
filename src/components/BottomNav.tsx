@@ -2,7 +2,7 @@ import React from 'react';
 import { Home, PlusSquare, Trophy, User } from 'lucide-react';
 import { cn } from '../lib/utils';
 
-type Tab = 'home' | 'beg' | 'leaders' | 'me';
+type Tab = 'home' | 'beg' | 'leaders' | 'profile';
 
 interface BottomNavProps {
   activeTab: Tab;
@@ -14,7 +14,7 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
     { id: 'home', label: 'Home', icon: <Home className="w-6 h-6" /> },
     { id: 'beg', label: 'Beg', icon: <PlusSquare className="w-6 h-6" /> },
     { id: 'leaders', label: 'Leaders', icon: <Trophy className="w-6 h-6" /> },
-    { id: 'me', label: 'Me', icon: <User className="w-6 h-6" /> },
+    { id: 'profile', label: 'Profile', icon: <User className="w-6 h-6" /> },
   ];
 
   return (
@@ -33,7 +33,7 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
           {React.cloneElement(tab.icon as React.ReactElement, {
             className: cn("w-6 h-6", activeTab === tab.id && "fill-current")
           })}
-          <span className="baloo text-[12px] font-bold uppercase tracking-wider mt-0.5">
+          <span className="font-display text-[10px] font-black uppercase tracking-widest mt-1">
             {tab.label}
           </span>
         </button>

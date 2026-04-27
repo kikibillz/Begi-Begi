@@ -1,4 +1,4 @@
-export type Category = 'Items' | 'Favors' | 'Money' | 'Experiences';
+export type Category = 'Items' | 'Favors' | 'Money' | 'Experiences' | 'Coffee' | 'Help' | 'Food';
 
 export interface Profile {
   id: string;
@@ -14,6 +14,7 @@ export interface Beg {
   id: string;
   created_at: string;
   user_id: string;
+  target_user_id?: string | null;
   title: string;
   description: string;
   category: Category;
